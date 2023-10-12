@@ -60,7 +60,7 @@ root = tk.Tk()
 root.title(f"{title} v{version}")
 
 # Set the window icon
-icon = tk.PhotoImage(file="icon.png")
+icon = tk.PhotoImage(file="./img/icon.png")
 root.iconphoto(False, icon)
 
 # Set up data entry validation
