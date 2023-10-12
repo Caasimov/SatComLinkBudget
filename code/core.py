@@ -56,5 +56,3 @@ def required_data_rate(bits_per_pixel, swath_width, pixel_size, sc_alt, mu, plan
     '''Obtain downlink required data rate'''
     # S/C velocity relative to ground calculated
     V_ground = m.sqrt(mu / (sc_alt + planetary_r)) * (planetary_r / (planetary_r + sc_alt))
-    
-
