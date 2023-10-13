@@ -1,6 +1,7 @@
 import tkinter as tk
 import tkinter.ttk as ttk
 import pyperclip as pclip
+
 #import core
 
 
@@ -18,11 +19,11 @@ def validate_input(P):
     
 def toggle_elong_angle_entry():
     '''Toggle functionality to elongation angle'''
-    if elong_angle_enabled.get():
-        elong_angle_entry.config(state="normal")
-    else:
+    if (target_body_select.get() == "Earth") or (target_body_select.get() == "Moon"):
         elong_angle_entry.delete(0, 'end')  # Clear the input field
-        elong_angle_entry.config(state="disabled")
+        elong_angle_entry.config(state="disabled")    
+    else:
+        elong_angle_entry.config(state="normal")
 
 def toggle_efficiency_entry(entry, enabled_var):
     '''Toggle functionality to antenna efficiency'''
@@ -42,8 +43,8 @@ def generate_bibtex():
     version      = {{ {version} }}, 
     year         = {{2023}},
     publisher    = {{TU Delft}},
-    url          = {{https://github.com/YourUsername/YourTool}},
-    note         = {{Available under License XYZ}},
+    url          = {{https://github.com/Caasimov/SatComLinkBudget}},
+    note         = {{Available under GPL-3.0 license}},
     }}"""
     pclip.copy(citation_content)
 
@@ -66,6 +67,21 @@ root.iconphoto(False, icon)
 # Set up data entry validation
 vcmd = root.register(validate_input)
 
+# Set up modulation/coding type options
+target_body_options = ["Mercury",
+                       "Venus",
+                       "Earth",
+                       "Moon",
+                       "Mars",
+                       "Jupiter",
+                       "Saturn",
+                       "Uranus",
+                       "Neptune"]
+target_body_select = tk.StringVar()
+target_body_select.set(target_body_options[2])
+target_body_select.trace_add("write", lambda *args: toggle_elong_angle_entry())
+
+
 # Set up elongation angle input toggle
 elong_angle_enabled = tk.BooleanVar()
 elong_angle_enabled.set(False)
@@ -79,7 +95,14 @@ antenna_gs_eff_enabled.set(False)
 
 
 # Set up modulation/coding type options
-modulation_coding_options = ["uncoded", "something", "bla bla"]
+modulation_coding_options = ["Uncoded",
+                             "Reed-Solomon (only)",
+                             "Convolutional: r=1/2",
+                             "Convolutional-RS: r=1/2",
+                             "Convolutional-RS: r=1/6",
+                             "Turbo-Codes: r=1/2",
+                             "Turbo-Codes: r=1/6",
+                             "LDPC: r=3/4"]
 selected_modulation_coding = tk.StringVar()
 selected_modulation_coding.set(modulation_coding_options[0])
 
@@ -87,13 +110,11 @@ selected_modulation_coding.set(modulation_coding_options[0])
 BER_exponent = tk.StringVar()
 BER_exponent.set("-6")
 
-# Total power input field
-total_sc_power_label = tk.Label(root, text="Total spacecraft power:")
-total_sc_power_label.grid(row=0, column=0)
-total_sc_power_entry = tk.Entry(root, validate="key", validatecommand=(vcmd, '%P'), width=13)
-total_sc_power_entry.grid(row=0, column=1)
-total_sc_power_unit = tk.Label(root, text="[W]")
-total_sc_power_unit.grid(row=0, column=2)
+# Orbital target input field
+target_body_label = tk.Label(root, text="Orbital target:")
+target_body_label.grid(row=0, column=0)
+target_body_option_menu = ttk.Combobox(root, textvariable=target_body_select, values=target_body_options, state="readonly", width=13)
+target_body_option_menu.grid(row=0, column=1)
 
 # S/C transmitter power input field
 transmitter_sc_power_label = tk.Label(root, text="S/C transmitter power:")
@@ -198,8 +219,6 @@ elong_angle_entry = tk.Entry(root, validate="key", validatecommand=(vcmd, '%P'),
 elong_angle_entry.grid(row=12, column=1)
 elong_angle_unit = tk.Label(root, text="[°]")
 elong_angle_unit.grid(row=12, column=2)
-elong_angle_checkbox = tk.Checkbutton(root, variable=elong_angle_enabled)
-elong_angle_checkbox.grid(row=12, column=3)
 elong_angle_enabled.trace_add("write", lambda *args: toggle_elong_angle_entry())
 
 # Pointing offset angle input field
@@ -261,13 +280,13 @@ PL_downlink_time_unit.grid(row=19, column=2)
 # Modulation/Coding type input field
 modulation_type_label = tk.Label(root, text="Modulation/Coding type:")
 modulation_type_label.grid(row=20, column=0)
-modulation_type_option_menu = ttk.Combobox(root, textvariable=selected_modulation_coding, values=modulation_coding_options, state="readonly", width=10)
+modulation_type_option_menu = ttk.Combobox(root, textvariable=selected_modulation_coding, values=modulation_coding_options, state="readonly", width=16)
 modulation_type_option_menu.grid(row=20, column=1)
 
 # Required BER input field
 BER_req_label = tk.Label(root, text="Required BER (10^x):")
 BER_req_label.grid(row=21, column=0)
-BER_exponent_vals = [str(i) for i in range(-9, 0)]
+BER_exponent_vals = [str(i) for i in range(-6, -5)]
 BER_exponent_option_menu = ttk.Combobox(root, textvariable=BER_exponent, values=BER_exponent_vals, state="readonly", width=10)
 BER_exponent_option_menu.grid(row=21, column=1)
 
