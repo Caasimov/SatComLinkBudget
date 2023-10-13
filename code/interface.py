@@ -1,14 +1,13 @@
 import tkinter as tk
 import tkinter.ttk as ttk
-import pyperclip as pclip
-
-#import core
+from core import*
 
 
 ### PREAMBLE ###
 version = "1.0"
 title = "S/C Link Margin Calculator"
 
+### VALIDATION & CONDITIONAL DATA ENTRY FUNCTIONS ###
 def validate_input(P):
     '''Data entry verification, only float valid'''
     try:
@@ -34,21 +33,6 @@ def toggle_efficiency_entry(entry, enabled_var):
         entry.insert(0, "0.55")
         entry.config(state="disabled")
 
-def generate_bibtex():
-    '''Generate a BibTeX entry straight to clipboard'''
-    citation_content = f"""
-    @software{{link_margin_calculator,
-    author       = {{Adam Moëc}},
-    title        = {{ {title} }},
-    version      = {{ {version} }}, 
-    year         = {{2023}},
-    publisher    = {{TU Delft}},
-    url          = {{https://github.com/Caasimov/SatComLinkBudget}},
-    note         = {{Available under GPL-3.0 license}},
-    }}"""
-    pclip.copy(citation_content)
-
-
 def calculate_link_margin():
     '''Utilize core functions to generate link margin and output to UI'''
     link_margin_uplink = "OUTPUT"
@@ -56,7 +40,7 @@ def calculate_link_margin():
     link_margin_output_uplink.config(text=link_margin_uplink)
     link_margin_output_downlink.config(text=link_margin_downlink)
 
-#### UI SETUP ###
+#### UI LAYOUT/SETUP ###
 root = tk.Tk()
 root.title(f"{title} v{version}")
 
@@ -307,7 +291,7 @@ link_margin_output_downlink_units = tk.Label(root, text="[dB]")
 link_margin_output_downlink_units.grid(row=23, column=2)
 
 # Citation generator
-citation_generator_button = tk.Button(root, text="Copy BibTeX citation to clipboard", command=generate_bibtex)
+citation_generator_button = tk.Button(root, text="Copy BibTeX citation to clipboard", command=generate_bibtex(title, version))
 citation_generator_button.grid(row=24, column=1)
 
 
