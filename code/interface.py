@@ -146,7 +146,7 @@ root = tk.Tk()
 root.title(f"{title} v{version}")
 
 # Set the window icon
-icon = tk.PhotoImage(file="./img/icon.png")
+icon = tk.PhotoImage(file=resource_path("./img/icon.png"))
 root.iconphoto(False, icon)
 
 # Set up data entry validation

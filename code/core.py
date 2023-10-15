@@ -1,5 +1,7 @@
 import math as m
 import csv
+import sys
+import os
 from tkinter import filedialog
 import pyperclip as pclip
 
@@ -41,6 +43,12 @@ def generate_bibtex(title, version):
     note         = {{Available under GPL-3.0 license}},
     }}"""
     pclip.copy(citation_content)
+    
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath('.'), relative_path)
+
 
 def write_to_csv(uplink_data, downlink_data):
     '''Write loss/gain data to csv file'''
