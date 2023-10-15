@@ -59,10 +59,13 @@ def calculate_link_margin():
     G_GS_RX = transmitter_gain(uplink_freq_GHz(downlink_freq_entry.get(), sc_TAR_entry.get()), antenna_sc_diam_entry.get(), antenna_sc_eff_entry.get())
     L_GS_DR = val_to_dB(float(uplink_datarate_req_entry.get()) / channel_coding_data[selected_modulation_coding.get()][0])
     L_boltzmann = val_to_dB(float(boltzmann_const))
-    L_GS_sys_temp = val_to_dB(float(temp_sys_uplink_entry.get()))
+    L_GS_sys_temp = val_to_dB(1/float(temp_sys_uplink_entry.get()))
     
     # Link margin calculation (difference between SNR_uplink and SNR_uplink_req)
-    SNR_uplink = P_GS + L_GS_TX + G_GS_TX - L_GS_pointing_out_up + L_GS_space - L_GS_pointing_in_up + L_GS_RX + G_GS_RX - L_GS_DR - L_boltzmann - L_GS_sys_temp
+    SNR_uplink = P_GS + L_GS_TX + G_GS_TX - L_GS_pointing_out_up + L_GS_space - L_GS_pointing_in_up + L_GS_RX + G_GS_RX - L_GS_DR - L_boltzmann + L_GS_sys_temp
+    print(SNR_uplink)
+    print(P_GS, L_GS_TX, G_GS_TX, L_GS_pointing_out_up, L_GS_space, L_GS_pointing_in_up, L_GS_RX, G_GS_RX, L_GS_DR, L_boltzmann, L_GS_sys_temp)
+
     SNR_uplink_req = channel_coding_data[selected_modulation_coding.get()][1]
     link_margin_uplink = round((SNR_uplink - SNR_uplink_req), 5)
     
@@ -81,7 +84,7 @@ def calculate_link_margin():
     else:
         L_SC_space = space_loss_DS(downlink_freq_entry.get(), celestial_body_data["Earth"][2], celestial_body_data[target_body_select.get()][2], elong_angle_entry.get())
         
-    L_SC_pointing_in_down = pointing_loss(downlink_freq_entry.get(), antenna_sc_diam_entry.get(), gs_pointing_offset_angle_entry.get())
+    L_SC_pointing_in_down = pointing_loss(downlink_freq_entry.get(), antenna_gs_diam_entry.get(), gs_pointing_offset_angle_entry.get())
     L_SC_RX = val_to_dB(float(receiver_LF_entry.get()))
     G_SC_RX = transmitter_gain(downlink_freq_entry.get(), antenna_gs_diam_entry.get(), antenna_gs_eff_entry.get())
     L_SC_DR = required_data_rate(PL_bpp_entry.get(), 
@@ -93,12 +96,16 @@ def calculate_link_margin():
                                  channel_coding_data[selected_modulation_coding.get()][0],
                                  celestial_body_data[target_body_select.get()][0],
                                  celestial_body_data[target_body_select.get()][1])
-    L_SC_sys_temp = val_to_dB(float(temp_sys_downlink_entry.get()))
-
+    L_SC_sys_temp = val_to_dB(1/float(temp_sys_downlink_entry.get()))
+        
     # Link margin calculation (difference between SNR_downlink and SNR_downlink_req)
-    SNR_downlink= P_SC + L_SC_TX + G_SC_TX - L_SC_pointing_out_down + L_SC_space - L_SC_pointing_in_down + L_SC_RX + G_SC_RX - L_SC_DR - L_boltzmann - L_SC_sys_temp
+    SNR_downlink= P_SC + L_SC_TX + G_SC_TX - L_SC_pointing_out_down + L_SC_space - L_SC_pointing_in_down + L_SC_RX + G_SC_RX - L_SC_DR - L_boltzmann + L_SC_sys_temp
     SNR_downlink_req = channel_coding_data[selected_modulation_coding.get()][1]
     link_margin_downlink = round((SNR_downlink - SNR_downlink_req), 5)
+    
+    print(SNR_downlink)
+    print(P_SC, L_SC_TX, G_SC_TX, L_SC_pointing_out_down, L_SC_space, L_SC_pointing_in_down, L_SC_RX, G_SC_RX, L_SC_DR, L_boltzmann, L_SC_sys_temp)
+
     
     link_margin_output_uplink.config(text=link_margin_uplink)
     link_margin_output_downlink.config(text=link_margin_downlink)

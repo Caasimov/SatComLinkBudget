@@ -71,14 +71,13 @@ def transmitter_gain(freq_transmitter_GHz, transmitter_diam, antenna_efficiency)
     gain = float(antenna_efficiency) * ((m.pi * float(transmitter_diam)) / wavelength)**2
     # Antenna gain [dB] calculated
     G_antenna = val_to_dB(gain)
-    print(G_antenna)
 
     return G_antenna
 
 def space_loss_DS(freq_transmitter_GHz, d_earth_sun, d_sc_sun, elong_angle):
     '''Obtain the space loss for deep space missions'''
     # Calculate S (S/C to GS distance)
-    S = m.sqrt((d_earth_sun*10**3)**2 + (d_sc_sun*10**3)**2 - (2 * (d_earth_sun*10**3) * (d_sc_sun*10**3) * m.cos(m.radians(float(elong_angle)))))
+    S = m.sqrt((d_earth_sun*(10**3))**2 + (d_sc_sun*(10**3))**2 - (2 * (d_earth_sun*(10**3)) * (d_sc_sun*(10**3)) * m.cos(m.radians(float(elong_angle)))))
     # Calculate lambda (wavelength)
     wavelength = v_light / (float(freq_transmitter_GHz) * 10**9)
     # Calculate space loss [-]
@@ -91,7 +90,7 @@ def space_loss_DS(freq_transmitter_GHz, d_earth_sun, d_sc_sun, elong_angle):
 def space_loss(freq_transmitter_GHz, altitude):
     '''Obtain the space loss for near-Earth missions (inlcuding Moon)'''
     # Calculate S (S/C to GS distance)
-    S = float(altitude)
+    S = float(altitude)*(10**3)
     # Calculate lambda (wavelength)
     wavelength = v_light / (float(freq_transmitter_GHz) * 10**9)
     # Calculate space loss [-]
