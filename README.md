@@ -16,7 +16,7 @@ SatComLinkBudget is a tool designed for satellite communication link budget calc
 ## Usage
 1. Input satellite link parameters.
 2. Click 'Calculate'.
-3. Save loss and gain values to CSV file
+3. Save loss and gain values to CSV file.
 4. Interpret the results.
 
 ## Contributing
