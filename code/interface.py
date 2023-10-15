@@ -63,11 +63,27 @@ def calculate_link_margin():
     
     # Link margin calculation (difference between SNR_uplink and SNR_uplink_req)
     SNR_uplink = P_GS + L_GS_TX + G_GS_TX - L_GS_pointing_out_up + L_GS_space - L_GS_pointing_in_up + L_GS_RX + G_GS_RX - L_GS_DR - L_boltzmann + L_GS_sys_temp
-    print(SNR_uplink)
-    print(P_GS, L_GS_TX, G_GS_TX, L_GS_pointing_out_up, L_GS_space, L_GS_pointing_in_up, L_GS_RX, G_GS_RX, L_GS_DR, L_boltzmann, L_GS_sys_temp)
-
     SNR_uplink_req = channel_coding_data[selected_modulation_coding.get()][1]
     link_margin_uplink = round((SNR_uplink - SNR_uplink_req), 5)
+    
+    # Tabulate the uplink data
+    global uplink_data
+    uplink_data = {
+        'P_GS': ('GS power', round(P_GS, 5)),
+        'L_TX': ('Transmitter loss', round(L_GS_TX, 5)),
+        'G_TX': ('Transmitter gain', round(G_GS_TX, 5)),
+        'L_GS_pointing': ('GS pointing loss', round(-L_GS_pointing_out_up, 5)),
+        'L_space': ('Space loss', round(L_GS_space, 5)),
+        'L_SC_pointing': ('S/C pointing loss', round(-L_GS_pointing_in_up, 5)),
+        'G_RX': ('Receiver gain', round(G_GS_RX, 5)),
+        'L_RX': ('Receiver loss', round(L_GS_RX, 5)),
+        '1/DR': ('Required data rate', round(-L_GS_DR, 5)),
+        '1/k': ('Boltzmann constant', round(-L_boltzmann, 5)),
+        '1/T_sys': ('System noise temperature', round(L_GS_sys_temp, 5)),
+        'SNR': ('Received signal-to-noise ratio', round(SNR_uplink, 5)),
+        'SNR_req': ('Required signal-to-noise ratio', round(SNR_uplink_req, 5)),
+        'M': ('Link margin', round(link_margin_uplink, 5))
+    }
     
     # DOWNLINK #
     # Obtain spacecraft transmitter power in dB
@@ -103,9 +119,24 @@ def calculate_link_margin():
     SNR_downlink_req = channel_coding_data[selected_modulation_coding.get()][1]
     link_margin_downlink = round((SNR_downlink - SNR_downlink_req), 5)
     
-    print(SNR_downlink)
-    print(P_SC, L_SC_TX, G_SC_TX, L_SC_pointing_out_down, L_SC_space, L_SC_pointing_in_down, L_SC_RX, G_SC_RX, L_SC_DR, L_boltzmann, L_SC_sys_temp)
-
+    # Tabulate the downlink data
+    global downlink_data
+    downlink_data = {
+        'P_SC': ('S/C power', round(P_SC, 5)),
+        'L_TX': ('Transmitter loss', round(L_SC_TX, 5)),
+        'G_TX': ('Transmitter gain', round(G_SC_TX, 5)),
+        'L_SC_pointing': ('S/C pointing loss', round(-L_SC_pointing_out_down, 5)),
+        'L_space': ('Space loss', round(L_SC_space, 5)),
+        'L_GS_pointing': ('GS pointing loss', round(-L_SC_pointing_in_down, 5)),
+        'G_RX': ('Receiver gain', round(G_SC_RX, 5)),
+        'L_RX': ('Receiver loss', round(L_SC_RX, 5)),
+        '1/DR': ('Required data rate', round(-L_SC_DR, 5)),
+        '1/k': ('Boltzmann constant', round(-L_boltzmann, 5)),
+        '1/T_sys': ('System noise temperature', round(L_SC_sys_temp, 5)),
+        'SNR': ('Received signal-to-noise ratio', round(SNR_downlink, 5)),
+        'SNR_req': ('Required signal-to-noise ratio', round(SNR_downlink_req, 5)),
+        'M': ('Link margin', round(link_margin_downlink, 5))
+    }
     
     link_margin_output_uplink.config(text=link_margin_uplink)
     link_margin_output_downlink.config(text=link_margin_downlink)
@@ -171,6 +202,10 @@ selected_modulation_coding.set(modulation_coding_options[0])
 # Set up BER exponent options
 BER_exponent = tk.StringVar()
 BER_exponent.set("-6")
+
+# Initialize uplink and downlink data
+uplink_data = []
+downlink_data = []
 
 # Orbital target input field
 target_body_label = tk.Label(root, text="Orbital target:")
@@ -407,8 +442,11 @@ link_margin_output_downlink_units = tk.Label(root, text="[dB]")
 link_margin_output_downlink_units.grid(row=26, column=2)
 
 # Citation generator
-citation_generator_button = tk.Button(root, text="Copy BibTeX citation to clipboard", command=generate_bibtex(title, version))
+citation_generator_button = tk.Button(root, text="Copy BibTeX citation to clipboard", command=lambda: generate_bibtex(title, version))
 citation_generator_button.grid(row=27, column=1)
 
+# CSV file generator
+csv_generator_button = tk.Button(root, text="Save to CSV", command=lambda: write_to_csv(uplink_data, downlink_data))
+csv_generator_button.grid(row=28, column=0)
 
 root.mainloop()

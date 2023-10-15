@@ -1,4 +1,6 @@
 import math as m
+import csv
+from tkinter import filedialog
 import pyperclip as pclip
 
 ### CONSTANTS ###
@@ -39,6 +41,27 @@ def generate_bibtex(title, version):
     note         = {{Available under GPL-3.0 license}},
     }}"""
     pclip.copy(citation_content)
+
+def write_to_csv(uplink_data, downlink_data):
+    '''Write loss/gain data to csv file'''
+    file_path = filedialog.asksaveasfilename(defaultextension=".csv", filetypes=[("CSV files", "*.csv")])
+    # Ask user for file path, and check if they cancelled the dialog
+    if not file_path:
+        return
+    with open(file_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        
+        # Write headers
+        headers = ["", "UPLINK LINK BUDGET", "", "", "DOWNLINK LINK BUDGET", ""]
+        writer.writerow(headers)
+        writer.writerow(["Quantity", "", "Value [dB]", "Quantity", "", "Value [dB]"])
+        
+        # Write data rows
+        for (uplink_key, downlink_key) in zip(uplink_data.keys(), downlink_data.keys()):
+            uplink_desc, uplink_val = uplink_data[uplink_key]
+            downlink_desc, downlink_val = downlink_data[downlink_key]
+            row = [uplink_key, uplink_desc, uplink_val, downlink_key, downlink_desc, downlink_val]
+            writer.writerow(row)
 
 ### GAIN/LOSS FUNCTIONS ###
 def val_to_dB(num):
