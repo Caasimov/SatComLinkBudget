@@ -74,7 +74,8 @@ def write_to_csv(uplink_data, downlink_data):
 ### GAIN/LOSS FUNCTIONS ###
 def val_to_dB(num):
     '''Simple function to translate values to dB'''
-    return 10 * m.log10(num)
+    dB = 10 * m.log10(num)
+    return dB
 
 def uplink_freq_GHz(freq_dlink_GHz, TAR):
     '''Obtain uplink frequency [GHz] from downlink frequency and turn around ratio (TAR)'''
@@ -108,7 +109,7 @@ def transmitter_gain(freq_transmitter_GHz, transmitter_diam, antenna_efficiency)
 def space_loss_DS(freq_transmitter_GHz, d_earth_sun, d_sc_sun, elong_angle):
     '''Obtain the space loss for deep space missions'''
     # Calculate S (S/C to GS distance)
-    S = m.sqrt((d_earth_sun*(10**3))**2 + (d_sc_sun*(10**3))**2 - (2 * (d_earth_sun*(10**3)) * (d_sc_sun*(10**3)) * m.cos(m.radians(float(elong_angle)))))
+    S = 1000 * m.sqrt((d_earth_sun)**2 + (d_sc_sun)**2 - (2 * (d_earth_sun) * (d_sc_sun) * m.cos(m.radians(float(elong_angle)))))
     # Calculate lambda (wavelength)
     wavelength = v_light / (float(freq_transmitter_GHz) * 10**9)
     # Calculate space loss [-]
@@ -118,10 +119,10 @@ def space_loss_DS(freq_transmitter_GHz, d_earth_sun, d_sc_sun, elong_angle):
     
     return L_s
 
-def space_loss(freq_transmitter_GHz, altitude):
+def space_loss(freq_transmitter_GHz, altitude, body_radius):
     '''Obtain the space loss for near-Earth missions (inlcuding Moon)'''
     # Calculate S (S/C to GS distance)
-    S = float(altitude)*(10**3)
+    S = m.sqrt((float(altitude) + body_radius)**2 - body_radius**2) * 1000
     # Calculate lambda (wavelength)
     wavelength = v_light / (float(freq_transmitter_GHz) * 10**9)
     # Calculate space loss [-]
@@ -134,11 +135,11 @@ def space_loss(freq_transmitter_GHz, altitude):
 def required_data_rate(bits_per_pixel, swath_width, pixel_size, sc_alt, PL_duty_cycle, PL_downlink_time, code_rate, mu, planetary_r):
     '''Obtain downlink required data rate'''
     # S/C velocity relative to ground calculated
-    V_ground = m.sqrt(float(mu) / (float(sc_alt) + float(planetary_r))) * (float(planetary_r) / (float(planetary_r) + float(sc_alt)))
+    V_ground = m.sqrt(float(mu) / (float(sc_alt) + float(planetary_r))) * (float(planetary_r) / (float(planetary_r) + float(sc_alt))) * 1000
     # Pixel size calculated
-    p_size = float(sc_alt) * 1000 * m.tan(m.radians(float(pixel_size)/60))
+    p_size = 2 * float(sc_alt) * 1000 * m.tan(m.radians(float(pixel_size)/(60*2)))
     # Swath width calculated
-    sw_width = float(sc_alt) * 1000 * m.tan(m.radians(float(swath_width)))
+    sw_width = 2 * float(sc_alt) * 1000 * m.tan(m.radians(float(swath_width)/2))
     # Generated data rate calculated
     R_G = float(bits_per_pixel) * ((sw_width * V_ground) / (p_size**2))
     # Payload-required data rate calculated

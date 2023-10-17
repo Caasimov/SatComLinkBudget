@@ -48,9 +48,9 @@ def calculate_link_margin():
     
     # Logic for selection between deep space and near Earth L_GX_space equations
     if target_body_select.get() == "Earth":
-        L_GS_space = space_loss(uplink_freq_GHz(downlink_freq_entry.get(), sc_TAR_entry.get()), orbit_alt_entry.get())
+        L_GS_space = space_loss(uplink_freq_GHz(downlink_freq_entry.get(), sc_TAR_entry.get()), orbit_alt_entry.get(), celestial_body_data[target_body_select.get()][1])
     elif target_body_select.get() == "Moon":
-        L_GS_space = space_loss(uplink_freq_GHz(downlink_freq_entry.get(), sc_TAR_entry.get()), celestial_body_data[target_body_select.get()][2])
+        L_GS_space = space_loss(uplink_freq_GHz(downlink_freq_entry.get(), sc_TAR_entry.get()), celestial_body_data[target_body_select.get()][2], 0)
     else:
         L_GS_space = space_loss_DS(uplink_freq_GHz(downlink_freq_entry.get(), sc_TAR_entry.get()), celestial_body_data["Earth"][2], celestial_body_data[target_body_select.get()][2], elong_angle_entry.get())
         
@@ -94,9 +94,9 @@ def calculate_link_margin():
     
     # Logic for selection between deep space and near Earth L_GX_space equations
     if target_body_select.get() == "Earth":
-        L_SC_space = space_loss(downlink_freq_entry.get(), orbit_alt_entry.get())
+        L_SC_space = space_loss(downlink_freq_entry.get(), orbit_alt_entry.get(), celestial_body_data[target_body_select.get()][1])
     elif target_body_select.get() == "Moon":
-        L_SC_space = space_loss(downlink_freq_entry.get(), celestial_body_data[target_body_select.get()][2])
+        L_SC_space = space_loss(downlink_freq_entry.get(), celestial_body_data[target_body_select.get()][2], 0)
     else:
         L_SC_space = space_loss_DS(downlink_freq_entry.get(), celestial_body_data["Earth"][2], celestial_body_data[target_body_select.get()][2], elong_angle_entry.get())
         
@@ -137,7 +137,7 @@ def calculate_link_margin():
         'SNR_req': ('Required signal-to-noise ratio', round(SNR_downlink_req, 5)),
         'M': ('Link margin', round(link_margin_downlink, 5))
     }
-    
+
     link_margin_output_uplink.config(text=link_margin_uplink)
     link_margin_output_downlink.config(text=link_margin_downlink)
 
